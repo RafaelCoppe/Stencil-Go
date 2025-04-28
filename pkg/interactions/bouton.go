@@ -1,4 +1,4 @@
-package interactions
+package StencilInteractions
 
 import (
 	"fmt"
