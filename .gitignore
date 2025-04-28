@@ -25,3 +25,5 @@ go.work.sum
 .env
 
 output.html
+
+examples/main.go
