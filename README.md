@@ -1,97 +1,129 @@
-# 🧱 Stencil - Framework WebAssembly déclaratif en Go
+# 🖌️ Stencil - Générateur HTML déclaratif en Go
 
-Stencil est un framework open-source en Go qui compile en WebAssembly pour générer dynamiquement du HTML dans le navigateur. Il permet de construire des interfaces utilisateur déclaratives, inspirées de SwiftUI, avec une syntaxe fluide et structurée. Plus besoin de JavaScript ni de frameworks front-end lourds.
-✨ Fonctionnalités principales
+**Stencil** est une bibliothèque open-source écrite en Go qui permet de générer facilement du HTML sans avoir besoin de connaissances en front-end. Elle adopte une approche déclarative inspirée de SwiftUI : les éléments HTML sont créés via des fonctions imbriquées, avec gestion automatique des classes CSS.
 
-- ⚙️ Compilation Go → WebAssembly (via TinyGo ou Go officiel)
+---
 
-- 🧩 Syntaxe déclarative et imbriquée pour le HTML
+## ✨ Fonctionnalités
 
-- 🎨 Gestion simplifiée des classes CSS avec des slices
+- 🧩 Syntaxe fluide et imbriquée pour décrire des structures HTML
+- 🎨 Ajout simple de classes CSS via des tableaux
+- 🧱 Composants de layout : `HorizontalBar`, `VerticalBar`, `Section`, etc.
+- 🖍️ Composants texte : `Titre1`, `Paragraphe`, `Span`, etc.
+- 🔘 Interactions : `Bouton`, `Lien`, `Form`, `InputText`, etc.
+- 🧰 Rendu final sous forme de `string`, intégrable partout
 
-- 🔄 Mise à jour dynamique du DOM (expérimental)
+---
 
-- 🖍️ Composants préfabriqués : Bouton, Form, Titre1, etc.
-
-- 🚀 Autonome, sans dépendance front-end externe
-
-- 🌐 Intégrable dans tout projet web via une simple balise "\<script>"
-
-## 🚀 Installation & Compilation WebAssembly
-
-1. Installer TinyGo (recommandé pour WASM)
+## 🚀 Installation
 
 ```bash
-brew install tinygo 
+go get github.com/RafaelCoppe/stencil
 ```
 
-ou suivre les instructions : <https://tinygo.org/getting-started/>
+---
 
-2. Compiler en WebAssembly
-
-```bash
-tinygo build -o main.wasm -target wasm ./main.go
-```
-
-3. Ajouter à ton HTML
-
-<script src="wasm_exec.js"></script>
-<script>
-    const go = new Go();
-    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
-        go.run(result.instance);
-    });
-</script>
-
-## 🧑‍💻 Exemple d’utilisation (Go → WASM)
+## 🧑‍💻 Exemple d’utilisation
 
 ```go
-    package main
+package main
 
-    import (
-        "syscall/js"
-        "stencil"
+import (
+    "fmt"
+    "stencil"
+)
+
+func main() {
+    html := stencil.Page("Exemple",
+        []string{
+            stencil.HorizontalBar([]string{
+                stencil.Paragraphe("Navigation", []string{"text-blue-500"}),
+                stencil.VerticalBar([]string{
+                    stencil.Titre1("Boutons", []string{"text-xl", "font-bold"}),
+                    stencil.HorizontalBar([]string{
+                        stencil.Bouton("OK", "alert('OK')", []string{"bg-green-500", "text-white", "px-4", "py-2"}),
+                        stencil.Bouton("Cancel", "alert('Cancel')", []string{"bg-red-500", "text-white", "px-4", "py-2"}),
+                    }, nil),
+                }, nil),
+            }, []string{"flex", "gap-4"}),
+        },
     )
 
-    func main() {
-        dom := stencil.Page("Exemple",
-            []string{
-                stencil.HorizontalBar([]string{
-                    stencil.Titre1("Bienvenue sur Stencil", []string{"text-3xl", "font-bold"}),
-                    stencil.Bouton("Clique-moi", "alert('Hello from WASM!')", []string{"bg-blue-500", "text-white", "px-4", "py-2"}),
-                }, []string{"gap-4"}),
-            },
-        )
-
-        js.Global().Get("document").Call("getElementById", "app").Set("innerHTML", dom)
-        select {} // empêche la sortie du programme
-    }
+    fmt.Println(html)
+}
 ```
 
-```html
-<!-- index.html -->
-<body>
-  <div id="app"></div>
-  <!-- script WebAssembly ici -->
-</body>
-```
+---
 
-## 🧰 API des composants
+## 🔧 Fonctions disponibles
 
-(identique à la version bibliothèque, mais désormais rendue côté navigateur en WASM)
+### 📄 Structure de page
 
-Consulte les fonctions disponibles dans la documentation complète (à créer).
+| Fonction | Description |
+|---------|-------------|
+| `Page(title string, bodyElements []string)` | Génère une page HTML complète |
+| `Div(children []string, extraClasses []string)` | Génère un `<div>` |
+| `HorizontalBar(children []string, extraClasses []string)` | Flex row |
+| `VerticalBar(children []string, extraClasses []string)` | Flex column |
+| `Section(children []string, extraClasses []string)` | Génère une section |
+| `Container(children []string, extraClasses []string)` | Génère un conteneur centré |
 
-## 🔬 Tests
+### ✏️ Éléments texte
+
+| Fonction | Description |
+|---------|-------------|
+| `Titre1(text string, extraClasses []string)` | Génère un `<h1>` |
+| `Titre2(text string, extraClasses []string)` | Génère un `<h2>` |
+| `Paragraphe(text string, extraClasses []string)` | Génère un `<p>` |
+| `Span(text string, extraClasses []string)` | Génère un `<span>` |
+
+### 🔘 Interactions
+
+| Fonction | Description |
+|---------|-------------|
+| `Bouton(label string, onClick string, extraClasses []string)` | Génère un bouton `<button>` |
+| `Lien(label string, href string, extraClasses []string)` | Génère un lien `<a>` |
+
+### 📥 Formulaires
+
+| Fonction | Description |
+|---------|-------------|
+| `Form(children []string, action string, method string, extraClasses []string)` | Génère un formulaire |
+| `InputText(name string, placeholder string, value string, extraClasses []string)` | Champ texte |
+| `TextArea(name string, placeholder string, value string, extraClasses []string)` | Zone de texte |
+| `CheckBox(name string, checked bool, label string, extraClasses []string)` | Case à cocher |
+
+### 🖼️ Médias
+
+| Fonction | Description |
+|---------|-------------|
+| `Image(src string, alt string, extraClasses []string)` | Image |
+| `Video(src string, controls bool, extraClasses []string)` | Vidéo |
+
+### 🧩 Divers
+
+| Fonction | Description |
+|---------|-------------|
+| `HR(extraClasses []string)` | Ligne horizontale |
+| `Br()` | Saut de ligne |
+| `Join(elements []string)` | Concatène les éléments (helper) |
+
+---
+
+## 🧪 Tests
 
 ```bash
 go test ./...
 ```
 
+---
+
 ## 🤝 Contribuer
 
-Contributions, idées, tests bienvenus ! Ouvre une issue ou une pull request pour participer 🛠️
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une *issue* ou une *pull request*. On adore les nouvelles idées ✨
+
+---
 
 ## 📄 Licence
 
-Stencil est distribué sous licence MIT. Voir LICENSE.
+Stencil est distribué sous licence MIT. Voir [LICENSE](./LICENSE) pour plus d'informations.
