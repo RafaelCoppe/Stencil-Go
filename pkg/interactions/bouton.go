@@ -2,14 +2,14 @@ package StencilInteractions
 
 import (
 	"fmt"
-	"strings"
+	"github.com/RafaelCoppe/Stencil-Go/pkg/utils"
 )
 
 // Button génère un bouton HTML.
-func Button(buttonType, text string, classes ...string) string {
-	classAttr := ""
-	if len(classes) > 0 {
-		classAttr = fmt.Sprintf(` class="%s"`, strings.Join(classes, " "))
-	}
-	return fmt.Sprintf(`<button type="%s"%s>%s</button>`, buttonType, classAttr, text)
+func Bouton(label string, event string, classes []string) string {
+	return fmt.Sprintf(`<button data-onclick="%s" class="%s">%s</button>`,
+		event,
+		StencilUtils.Join(classes...),
+		label,
+	)
 }
