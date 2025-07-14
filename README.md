@@ -18,7 +18,7 @@
 ## 🚀 Installation
 
 ```bash
-go get github.com/RafaelCoppe/stencil
+go get github.com/RafaelCoppe/Stencil-Go
 ```
 
 ---
@@ -30,23 +30,27 @@ package main
 
 import (
     "fmt"
-    "stencil"
+    StencilPage "github.com/RafaelCoppe/Stencil-Go/pkg/page"
+    StencilText "github.com/RafaelCoppe/Stencil-Go/pkg/text"
+    StencilLayout "github.com/RafaelCoppe/Stencil-Go/pkg/layout"
+    StencilInteractions "github.com/RafaelCoppe/Stencil-Go/pkg/interactions"
+    StencilUtils "github.com/RafaelCoppe/Stencil-Go/pkg/utils"
 )
 
 func main() {
-    html := stencil.Page("Exemple",
-        []string{
-            stencil.HorizontalBar([]string{
-                stencil.Paragraphe("Navigation", []string{"text-blue-500"}),
-                stencil.VerticalBar([]string{
-                    stencil.Titre1("Boutons", []string{"text-xl", "font-bold"}),
-                    stencil.HorizontalBar([]string{
-                        stencil.Bouton("OK", "alert('OK')", []string{"bg-green-500", "text-white", "px-4", "py-2"}),
-                        stencil.Bouton("Cancel", "alert('Cancel')", []string{"bg-red-500", "text-white", "px-4", "py-2"}),
-                    }, nil),
-                }, nil),
-            }, []string{"flex", "gap-4"}),
-        },
+    html := StencilPage.Page("Exemple",
+        StencilUtils.Join(
+            StencilLayout.HorizontalBar([]string{
+                StencilText.Paragraphe("Navigation", "text-blue-500"),
+                StencilLayout.VerticalBar([]string{
+                    StencilText.Titre1("Boutons", "text-xl", "font-bold"),
+                    StencilLayout.HorizontalBar([]string{
+                        StencilInteractions.Bouton("OK", "alert('OK')", "bg-green-500", "text-white", "px-4", "py-2"),
+                        StencilInteractions.Bouton("Cancel", "alert('Cancel')", "bg-red-500", "text-white", "px-4", "py-2"),
+                    }, "flex", "gap-4"),
+                }),
+            }, "flex", "gap-4"),
+        ),
     )
 
     fmt.Println(html)
@@ -55,135 +59,163 @@ func main() {
 
 ---
 
-## 🔧 Fonctions disponibles
+## � Architecture modulaire
+
+Stencil-Go est organisé en packages spécialisés pour une meilleure maintenabilité :
+
+```text
+pkg/
+├── form/           # Composants de formulaires
+├── interactions/   # Boutons, liens, navigation
+├── layout/         # Éléments de mise en page
+├── media/          # Images, vidéos, audio
+├── page/           # Structure de page et listes
+├── text/           # Éléments textuels
+├── types/          # Types et constantes
+└── utils/          # Utilitaires et helpers
+```
+
+### 🔧 Importation des packages
+
+```go
+import (
+    StencilForm "github.com/RafaelCoppe/Stencil-Go/pkg/form"
+    StencilInteractions "github.com/RafaelCoppe/Stencil-Go/pkg/interactions"
+    StencilLayout "github.com/RafaelCoppe/Stencil-Go/pkg/layout"
+    StencilMedia "github.com/RafaelCoppe/Stencil-Go/pkg/media"
+    StencilPage "github.com/RafaelCoppe/Stencil-Go/pkg/page"
+    StencilText "github.com/RafaelCoppe/Stencil-Go/pkg/text"
+    StencilTypes "github.com/RafaelCoppe/Stencil-Go/pkg/types"
+    StencilUtils "github.com/RafaelCoppe/Stencil-Go/pkg/utils"
+)
+```
+
+---
+
+## �🔧 Fonctions disponibles
 
 ### 📄 Structure de page
 
 | Fonction | Description |
 |---------|-------------|
-| `Page(title string, bodyElements []string)` | Génère une page HTML complète |
-| `Div(children string, extraClasses ...string)` | Génère un `<div>` |
-| `Container(children string, extraClasses ...string)` | Génère un conteneur centré |
+| `Page(title, body string, classes ...string)` | Génère une page HTML complète |
+| `Div(content string, classes ...string)` | Génère un `<div>` |
+| `Container(content string, classes ...string)` | Génère un conteneur centré |
 
 ### 🧱 Layout
 
 | Fonction | Description |
 |---------|-------------|
-| `HorizontalBar(children []string, extraClasses ...string)` | Flex row |
-| `VerticalBar(children []string, extraClasses ...string)` | Flex column |
-| `Section(children []string, extraClasses ...string)` | Génère une section |
-| `Article(children []string, extraClasses ...string)` | Génère un article |
-| `Header(children []string, extraClasses ...string)` | Génère un header |
-| `Footer(children []string, extraClasses ...string)` | Génère un footer |
-| `Nav(children []string, extraClasses ...string)` | Génère une navigation |
-| `Main(children []string, extraClasses ...string)` | Génère un main |
+| `HorizontalBar(children []string, classes ...string)` | Flex row |
+| `VerticalBar(children []string, classes ...string)` | Flex column |
+| `Section(content string, classes ...string)` | Génère une section |
 
 ### ✏️ Éléments texte
 
 | Fonction | Description |
 |---------|-------------|
-| `Titre1(text string, extraClasses ...string)` | Génère un `<h1>` |
-| `Titre2(text string, extraClasses ...string)` | Génère un `<h2>` |
-| `Titre3(text string, extraClasses ...string)` | Génère un `<h3>` |
-| `Titre4(text string, extraClasses ...string)` | Génère un `<h4>` |
-| `Titre5(text string, extraClasses ...string)` | Génère un `<h5>` |
-| `Titre6(text string, extraClasses ...string)` | Génère un `<h6>` |
-| `Paragraphe(text string, extraClasses ...string)` | Génère un `<p>` |
-| `Span(text string, extraClasses ...string)` | Génère un `<span>` |
-| `Code(text string, extraClasses ...string)` | Génère un `<code>` |
-| `Pre(text string, extraClasses ...string)` | Génère un `<pre>` |
-| `CodeBlock(text string, extraClasses ...string)` | Génère un `<pre><code>` |
-| `Strong(text string, extraClasses ...string)` | Génère un `<strong>` |
-| `Em(text string, extraClasses ...string)` | Génère un `<em>` |
-| `Small(text string, extraClasses ...string)` | Génère un `<small>` |
-| `Mark(text string, extraClasses ...string)` | Génère un `<mark>` |
-| `Del(text string, extraClasses ...string)` | Génère un `<del>` |
-| `Ins(text string, extraClasses ...string)` | Génère un `<ins>` |
-| `Blockquote(text string, extraClasses ...string)` | Génère un `<blockquote>` |
+| `Titre1(text string, classes ...string)` | Génère un `<h1>` |
+| `Titre2(text string, classes ...string)` | Génère un `<h2>` |
+| `Titre3(text string, classes ...string)` | Génère un `<h3>` |
+| `Titre4(text string, classes ...string)` | Génère un `<h4>` |
+| `Titre5(text string, classes ...string)` | Génère un `<h5>` |
+| `Titre6(text string, classes ...string)` | Génère un `<h6>` |
+| `Paragraphe(text string, classes ...string)` | Génère un `<p>` |
+| `Span(text string, classes ...string)` | Génère un `<span>` |
+| `Code(text string, classes ...string)` | Génère un `<code>` |
+| `Pre(text string, classes ...string)` | Génère un `<pre>` |
+| `CodeBlock(text string, classes ...string)` | Génère un `<pre><code>` |
+| `Strong(text string, classes ...string)` | Génère un `<strong>` |
+| `Em(text string, classes ...string)` | Génère un `<em>` |
+| `Small(text string, classes ...string)` | Génère un `<small>` |
+| `Mark(text string, classes ...string)` | Génère un `<mark>` |
+| `Del(text string, classes ...string)` | Génère un `<del>` |
+| `Ins(text string, classes ...string)` | Génère un `<ins>` |
+| `Blockquote(text string, classes ...string)` | Génère un `<blockquote>` |
 
 ### 🔘 Interactions
 
 | Fonction | Description |
 |---------|-------------|
-| `Bouton(label string, onClick string, extraClasses ...string)` | Génère un bouton `<button>` |
-| `BoutonSubmit(text string, extraClasses ...string)` | Génère un bouton submit |
-| `BoutonReset(text string, extraClasses ...string)` | Génère un bouton reset |
-| `BoutonDisabled(text string, extraClasses ...string)` | Génère un bouton désactivé |
-| `BoutonWithId(text, id, event string, extraClasses ...string)` | Génère un bouton avec ID |
-| `Lien(href, label string, extraClasses ...string)` | Génère un lien `<a>` |
-| `NavLink(href, text string, active bool, extraClasses ...string)` | Lien de navigation |
-| `ExternalLink(href, text string, extraClasses ...string)` | Lien externe |
-| `MailtoLink(email, text string, extraClasses ...string)` | Lien email |
-| `TelLink(phone, text string, extraClasses ...string)` | Lien téléphone |
-| `DownloadLink(href, filename, text string, extraClasses ...string)` | Lien de téléchargement |
-| `Breadcrumb(items []map[string]string, extraClasses ...string)` | Fil d'Ariane |
-| `Pagination(currentPage, totalPages int, baseURL string, extraClasses ...string)` | Pagination |
+| `Bouton(label, onClick string, classes ...string)` | Génère un bouton `<button>` |
+| `BoutonSubmit(text string, classes ...string)` | Génère un bouton submit |
+| `BoutonReset(text string, classes ...string)` | Génère un bouton reset |
+| `BoutonDisabled(text string, classes ...string)` | Génère un bouton désactivé |
+| `BoutonWithId(text, id, event string, classes ...string)` | Génère un bouton avec ID |
+| `Lien(href, label string, classes ...string)` | Génère un lien `<a>` |
+| `NavLink(href, text string, active bool, classes ...string)` | Lien de navigation |
+| `ExternalLink(href, text string, classes ...string)` | Lien externe |
+| `MailtoLink(email, text string, classes ...string)` | Lien email |
+| `TelLink(phone, text string, classes ...string)` | Lien téléphone |
+| `DownloadLink(href, filename, text string, classes ...string)` | Lien de téléchargement |
+| `Breadcrumb(items []map[string]string, classes ...string)` | Fil d'Ariane |
+| `Pagination(currentPage, totalPages int, baseURL string, classes ...string)` | Pagination |
 
 ### 📥 Formulaires
 
 | Fonction | Description |
 |---------|-------------|
-| `Form(action, method string, elements []string, extraClasses ...string)` | Génère un formulaire |
-| `Input(inputType, name, placeholder string, extraClasses ...string)` | Champ input générique |
-| `InputText(name, placeholder, value string, extraClasses ...string)` | Champ texte |
-| `InputEmail(name, placeholder, value string, extraClasses ...string)` | Champ email |
-| `InputPassword(name, placeholder string, extraClasses ...string)` | Champ mot de passe |
-| `InputNumber(name, placeholder string, value, min, max int, extraClasses ...string)` | Champ numérique |
-| `InputDate(name, value string, extraClasses ...string)` | Champ date |
-| `InputFile(name, accept string, multiple bool, extraClasses ...string)` | Champ fichier |
-| `TextArea(name, placeholder, value string, rows, cols int, extraClasses ...string)` | Zone de texte |
-| `Select(name string, options map[string]string, selected string, extraClasses ...string)` | Liste déroulante |
-| `CheckBox(name, value, label string, checked bool, extraClasses ...string)` | Case à cocher |
-| `RadioButton(name, value, label string, checked bool, extraClasses ...string)` | Bouton radio |
-| `RadioGroup(name string, options []map[string]interface{}, extraClasses ...string)` | Groupe de radio |
-| `Range(name string, min, max, value int, extraClasses ...string)` | Slider |
-| `Color(name, value string, extraClasses ...string)` | Sélecteur de couleur |
+| `Form(action, method string, elements []string, classes ...string)` | Génère un formulaire |
+| `Input(inputType, name, placeholder string, classes ...string)` | Champ input générique |
+| `InputText(name, placeholder, value string, classes ...string)` | Champ texte |
+| `InputEmail(name, placeholder, value string, classes ...string)` | Champ email |
+| `InputPassword(name, placeholder string, classes ...string)` | Champ mot de passe |
+| `InputNumber(name, placeholder string, value, min, max int, classes ...string)` | Champ numérique |
+| `InputDate(name, value string, classes ...string)` | Champ date |
+| `InputFile(name, accept string, multiple bool, classes ...string)` | Champ fichier |
+| `TextArea(name, placeholder, value string, rows, cols int, classes ...string)` | Zone de texte |
+| `Select(name string, options map[string]string, selected string, classes ...string)` | Liste déroulante |
+| `CheckBox(name, value, label string, checked bool, classes ...string)` | Case à cocher |
+| `RadioButton(name, value, label string, checked bool, classes ...string)` | Bouton radio |
+| `RadioGroup(name string, options []map[string]interface{}, classes ...string)` | Groupe de radio |
+| `Range(name string, min, max, value int, classes ...string)` | Slider |
+| `Color(name, value string, classes ...string)` | Sélecteur de couleur |
 | `Hidden(name, value string)` | Champ caché |
-| `Label(forInput, text string, extraClasses ...string)` | Label |
-| `FieldSet(legend, content string, extraClasses ...string)` | Fieldset |
-| `FormGroup(labelText, inputHTML string, extraClasses ...string)` | Groupe de formulaire |
+| `Label(forInput, text string, classes ...string)` | Label |
+| `FieldSet(legend, content string, classes ...string)` | Fieldset |
+| `FormGroup(labelText, inputHTML string, classes ...string)` | Groupe de formulaire |
 
 ### 📋 Listes et tableaux
 
 | Fonction | Description |
 |---------|-------------|
-| `Ul(items []string, extraClasses ...string)` | Liste non ordonnée |
-| `Ol(items []string, extraClasses ...string)` | Liste ordonnée |
-| `Li(content string, extraClasses ...string)` | Élément de liste |
-| `Dl(items map[string]string, extraClasses ...string)` | Liste de définitions |
-| `Table(headers []string, rows [][]string, extraClasses ...string)` | Table complète |
-| `TableSimple(rows [][]string, extraClasses ...string)` | Table simple |
-| `Tr(cells []string, extraClasses ...string)` | Ligne de table |
-| `Td(content string, extraClasses ...string)` | Cellule de données |
-| `Th(content string, extraClasses ...string)` | Cellule d'en-tête |
+| `Ul(items []string, classes ...string)` | Liste non ordonnée |
+| `Ol(items []string, classes ...string)` | Liste ordonnée |
+| `Li(content string, classes ...string)` | Élément de liste |
+| `Dl(items map[string]string, classes ...string)` | Liste de définitions |
+| `Table(headers []string, rows [][]string, classes ...string)` | Table complète |
+| `TableSimple(rows [][]string, classes ...string)` | Table simple |
+| `Tr(cells []string, classes ...string)` | Ligne de table |
+| `Td(content string, classes ...string)` | Cellule de données |
+| `Th(content string, classes ...string)` | Cellule d'en-tête |
 
 ### 🖼️ Médias
 
 | Fonction | Description |
 |---------|-------------|
-| `Image(src, alt string, extraClasses ...string)` | Image |
-| `ImageWithTitle(src, alt, title string, extraClasses ...string)` | Image avec titre |
-| `ResponsiveImage(src, srcset, alt string, extraClasses ...string)` | Image responsive |
-| `Figure(src, alt, caption string, extraClasses ...string)` | Figure avec légende |
-| `Video(src string, controls bool, extraClasses ...string)` | Vidéo |
-| `VideoWithOptions(src string, controls, autoplay, loop, muted bool, extraClasses ...string)` | Vidéo avec options |
-| `VideoWithSources(sources map[string]string, controls bool, extraClasses ...string)` | Vidéo multi-sources |
-| `Audio(src string, controls bool, extraClasses ...string)` | Audio |
-| `Iframe(src string, width, height int, extraClasses ...string)` | IFrame |
+| `Image(src, alt string, classes ...string)` | Image |
+| `ImageWithTitle(src, alt, title string, classes ...string)` | Image avec titre |
+| `ResponsiveImage(src, srcset, alt string, classes ...string)` | Image responsive |
+| `Figure(src, alt, caption string, classes ...string)` | Figure avec légende |
+| `Video(src string, controls bool, classes ...string)` | Vidéo |
+| `VideoWithOptions(src string, controls, autoplay, loop, muted bool, classes ...string)` | Vidéo avec options |
+| `VideoWithSources(sources map[string]string, controls bool, classes ...string)` | Vidéo multi-sources |
+| `Audio(src string, controls bool, classes ...string)` | Audio |
+| `Iframe(src string, width, height int, classes ...string)` | IFrame |
 
 ### 🧩 Utilitaires
 
 | Fonction | Description |
 |---------|-------------|
-| `HR(extraClasses ...string)` | Ligne horizontale |
+| `HR(classes ...string)` | Ligne horizontale |
 | `Br()` | Saut de ligne |
 | `Nbsp()` | Espace insécable |
 | `Comment(text string)` | Commentaire HTML |
 | `Join(elements ...string)` | Concatène les éléments (helper) |
 | `EscapeHTML(text string)` | Échappe les caractères HTML |
 | `ClassBuilder(classes map[string]bool)` | Constructeur de classes conditionnel |
-| `Wrap(tag, content string, attributes map[string]string, extraClasses ...string)` | Élément HTML générique |
-| `SelfClosingTag(tag string, attributes map[string]string, extraClasses ...string)` | Balise auto-fermante |
+| `Wrap(tag, content string, attributes map[string]string, classes ...string)` | Élément HTML générique |
+| `SelfClosingTag(tag string, attributes map[string]string, classes ...string)` | Balise auto-fermante |
 
 ### 🏷️ Types
 
@@ -200,8 +232,59 @@ func main() {
 
 ## 🧪 Tests
 
+Le projet inclut une suite de tests complète pour tous les packages :
+
 ```bash
+# Exécuter tous les tests
 go test ./...
+
+# Tests avec coverage
+go test -cover ./...
+
+# Tests spécifiques par package
+go test ./tests/form_test.go
+go test ./tests/interactions_test.go
+go test ./tests/layout_test.go
+go test ./tests/page_test.go
+go test ./tests/text_test.go
+```
+
+### 📊 Couverture de tests
+
+Les tests couvrent :
+
+- ✅ Tous les composants de formulaires
+- ✅ Interactions (boutons, liens)
+- ✅ Éléments de layout
+- ✅ Structure de pages et listes
+- ✅ Composants textuels
+- ✅ Fonctions utilitaires
+
+---
+
+## 🌐 Intégration WebAssembly
+
+Stencil-Go est conçu pour fonctionner parfaitement avec le [Framework WebAssembly Stencil](https://github.com/RafaelCoppe/Stencil-Framework) :
+
+- **Compilation WebAssembly** : Générez des applications web performantes
+- **Routage automatique** : Système de routes basé sur fichiers (comme Next.js)
+- **Gestion d'état** : État réactif avec re-rendu automatique
+- **Événements** : Système d'événements JavaScript intégré
+
+### 🔗 Utilisation avec le framework
+
+```go
+// Dans une page du framework
+func (p *MyPage) Render() string {
+    return StencilPage.Container(
+        StencilUtils.Join(
+            StencilText.Titre1("Ma Page", "text-2xl", "font-bold"),
+            StencilText.Paragraphe("Contenu de la page"),
+            StencilInteractions.Bouton("Action", "handleAction", "btn", "btn-primary"),
+        ),
+        "container", "mx-auto", "p-4",
+    )
+}
 ```
 
 ---
@@ -209,6 +292,21 @@ go test ./...
 ## 🤝 Contribuer
 
 Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une *issue* ou une *pull request*. On adore les nouvelles idées ✨
+
+### 🚀 Pour contribuer
+
+1. Fork le projet
+2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`)
+3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
+4. Poussez vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrez une Pull Request
+
+### 📋 Guidelines
+
+- Ajoutez des tests pour toute nouvelle fonctionnalité
+- Respectez le style de code existant
+- Documentez les nouvelles fonctions
+- Vérifiez que tous les tests passent avec `go test ./...`
 
 ---
 
